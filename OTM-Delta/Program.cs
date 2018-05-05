@@ -10,8 +10,8 @@ namespace OTM_Delta
     {
         static void Main(string[] args)
         {
-            Tentativa1();
-            Console.ReadKey();
+            //Tentativa1();
+            //Console.ReadKey();
             Tentativa2();
             Console.ReadKey();
         }
