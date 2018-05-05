@@ -497,4 +497,75 @@ namespace OTM_Delta
             return hashCode;
         }
     }
+
+    class Graph
+    {
+        int V;    // No. of vertices
+        LinkedList<int>[] adj;  // Pointer to an array containing adjacency lists       
+
+        public Graph(int V)
+        {
+            this.V = V;
+            adj = new LinkedList<int>[V];
+
+            for (int i = 0; i < V; i++)
+            {
+                adj[i] = new LinkedList<int>();
+            }
+        }
+
+        public void AddEdge(int v, int w)
+        {
+            adj[v].AddLast(w); // Add w to v’s list.
+            adj[w].AddLast(v); // Since the graph is undirected
+        }
+
+        // The function to print vertex cover
+        public void printVertexCover()
+        {
+            // Initialize all vertices as not visited.
+            bool[] visited = new bool[V];
+
+            bool[] selected = new bool[V];
+
+            //for (int i = 0; i < V; i++)
+            //    visited[i] = false;
+
+            // Consider all edges one by one
+            for (int u = 0; u < V; u++)
+            {
+                // An edge is only picked when both visited[u] and visited[v]
+                // are false
+                if (visited[u] == false)
+                {
+                    // Go through all adjacents of u and pick the first not
+                    // yet visited vertex (We are basically picking an edge
+                    // (u, v) from remaining edges.
+                    foreach (var item in adj[u])
+                    {
+                        int v = item;
+
+                        if (visited[v] == false)
+                        {
+                            selected[v] = true;
+
+                            visited[v] = true;
+                            visited[u] = true;
+                            //break;
+                        }
+                    }
+                }
+            }
+
+            for (int i = 0; i < V; i++)
+                if (selected[i])
+                    Console.WriteLine(i);
+
+            // Print the vertex cover
+            //for (int i = 0; i < V; i++)
+            //    if (visited[i])
+            //        Console.WriteLine(i);
+        }
+
+    }
 }
