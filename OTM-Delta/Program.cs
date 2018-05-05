@@ -12,7 +12,6 @@ namespace OTM_Delta
         {
             Tentativa1();
             //Fim
-
             Console.ReadKey();
         }
 
