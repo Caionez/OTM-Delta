@@ -10,139 +10,145 @@ namespace OTM_Delta
     {
         static void Main(string[] args)
         {
-            Graph G;
+            Grafo G;
 
             MontaGrafo(out G);
 
-            G.printVertexCover();
+            List<int> resultado = G.ObterCoberturaMinimal();
+
+            Console.WriteLine("Subconjunto minimal:");
+
+            foreach (var item in resultado)
+            {                
+                Console.Write(" - {0}", item);
+            }
+
             Console.ReadKey();
         }
 
-        public static void MontaGrafo(out Graph G)
+        public static void MontaGrafo(out Grafo G)
         {
-            G = new Graph(26);
+            G = new Grafo(26);
 
-            G.AddEdge(0, 1);
+            G.AdicionarAresta(0, 2);
 
-            G.AddEdge(1, 2);
-            G.AddEdge(1, 13);
+            G.AdicionarAresta(1, 3);
 
-            G.AddEdge(2, 3);
-            G.AddEdge(2, 6);
+            G.AdicionarAresta(2, 3);
+            G.AdicionarAresta(2, 7);
 
-            G.AddEdge(3, 4);
 
-            G.AddEdge(4, 5);
-            G.AddEdge(4, 7);
+            G.AdicionarAresta(3, 11);
 
-            G.AddEdge(5, 16);
+            G.AdicionarAresta(4, 5);
+            G.AdicionarAresta(4, 12);
 
-            G.AddEdge(6, 7);
-            G.AddEdge(6, 8);
+            G.AdicionarAresta(5, 6);
+            G.AdicionarAresta(5, 24);
 
-            G.AddEdge(7, 9);
+            G.AdicionarAresta(7, 8);
+            G.AdicionarAresta(7, 13);
 
-            G.AddEdge(8, 9);
-            G.AddEdge(8, 10);
+            G.AdicionarAresta(8, 9);
+            G.AdicionarAresta(8, 15);
 
-            G.AddEdge(9, 11);
+            G.AdicionarAresta(9, 10);
+            G.AdicionarAresta(9, 16);
 
-            G.AddEdge(10, 11);
-            G.AddEdge(10, 14);
+            G.AdicionarAresta(10, 11);
+            G.AdicionarAresta(10, 17);
 
-            G.AddEdge(11, 15);
+            G.AdicionarAresta(11, 18);
 
-            G.AddEdge(12, 13);
+            G.AdicionarAresta(12, 19);
+            G.AdicionarAresta(12, 23);
 
-            G.AddEdge(13, 14);
+            G.AdicionarAresta(13, 14);
 
-            G.AddEdge(14, 15);
+            G.AdicionarAresta(14, 15);
+            G.AdicionarAresta(14, 20);
 
-            G.AddEdge(15, 16);
+            G.AdicionarAresta(15, 16);
 
-            G.AddEdge(16, 18);
+            G.AdicionarAresta(16, 17);
 
-            G.AddEdge(17, 18);
-            G.AddEdge(17, 20);
+            G.AdicionarAresta(17, 18);
 
-            G.AddEdge(18, 21);
+            G.AdicionarAresta(18, 21);
 
-            G.AddEdge(19, 20);
-            G.AddEdge(19, 22);
+            G.AdicionarAresta(17, 18);
 
-            G.AddEdge(20, 21);
+            G.AdicionarAresta(18, 21);
 
-            G.AddEdge(21, 23);
+            G.AdicionarAresta(20, 21);
 
-            G.AddEdge(22, 23);
-            G.AddEdge(22, 24);
+            G.AdicionarAresta(21, 22);
 
-            G.AddEdge(23, 25);
+            G.AdicionarAresta(22, 23);
+
+            G.AdicionarAresta(23, 24);
+
+            G.AdicionarAresta(24, 25);
         }
     }
-        
-    class Graph
+
+    class Grafo
     {
-        int V;    // No. of vertices
-        LinkedList<int>[] adj;  // Pointer to an array containing adjacency lists       
+        private int numeroVertices;        // Quantidade de vértices do grafo
+        LinkedList<int>[] listaAdjacencia; // Array de listas de adjacencia para cada vértice
 
-        public Graph(int V)
+        public Grafo(int numeroVertices)
         {
-            this.V = V;
-            adj = new LinkedList<int>[V];
+            this.numeroVertices = numeroVertices;
+            listaAdjacencia = new LinkedList<int>[numeroVertices];
 
-            for (int i = 0; i < V; i++)
-            {
-                adj[i] = new LinkedList<int>();
-            }
+            for (int i = 0; i < numeroVertices; i++)
+                listaAdjacencia[i] = new LinkedList<int>();
         }
 
-        public void AddEdge(int v, int w)
+        public void AdicionarAresta(int vertice1, int vertice2)
         {
-            adj[v].AddLast(w); // Add w to v’s list.
-            adj[w].AddLast(v); // Since the graph is undirected
+            listaAdjacencia[vertice1].AddLast(vertice2); // Adiciona o vertice2 a lista de adjacencia do vertice1
+            listaAdjacencia[vertice2].AddLast(vertice1); // E vice versa, pois o grafo não é direcionado
         }
 
-        // The function to print vertex cover
-        public void printVertexCover()
+        /// <summary>
+        /// Função que retorna um array contendo o conjunto de vértices que formam a cobertura
+        /// </summary>
+        public List<int> ObterCoberturaMinimal()
         {
-            // Initialize all vertices as not visited.
-            bool[] visited = new bool[V];
+            //Vetor referente a cada vértice do grafo
+            bool[] verticesVisitados = new bool[numeroVertices];
 
-            bool[] selected = new bool[V];
+            //Subconjunto de cobertura minimal
+            List<int> verticesSelecionados = new List<int>();
 
-            //for (int i = 0; i < V; i++)
-            //    visited[i] = false;
-
-            // Consider all edges one by one
-            for (int u = 0; u < V; u++)
+            //Passando por todos os vértices
+            for (int u = 0; u < numeroVertices; u++)
             {
-                // An edge is only picked when both visited[u] and visited[v]
-                // are false
-                if (visited[u] == false)
+                //Seleciona um vértice ainda não visitado
+                if (verticesVisitados[u] == false)
                 {
-                    // Go through all adjacents of u and pick the first not
-                    // yet visited vertex (We are basically picking an edge
-                    // (u, v) from remaining edges.
-                    foreach (var item in adj[u])
+                    //Para cada vértice adjacente ao selecionado
+                    foreach (var item in listaAdjacencia[u])
                     {
                         int v = item;
-
-                        if (visited[v] == false)
+                        //Se o adjacente não tiver sido visitado ainda,
+                        //marca tanto a origem (u) quanto o destino (v)
+                        //como visitados
+                        if (verticesVisitados[v] == false)
                         {
-                            selected[v] = true;
+                            verticesVisitados[v] = true;
+                            verticesVisitados[u] = true;
 
-                            visited[v] = true;
-                            visited[u] = true;
+                            //Adicionando o destino ao subconjunto de cobertura minimal
+                            verticesSelecionados.Add(v);                         
                         }
                     }
                 }
             }
-
-            for (int i = 0; i < V; i++)
-                if (selected[i])
-                    Console.WriteLine(i);
+            verticesSelecionados.Sort();
+            return verticesSelecionados;
         }
-
     }
 }
