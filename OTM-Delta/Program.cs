@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OTM_Delta
 {
@@ -10,20 +7,52 @@ namespace OTM_Delta
     {
         static void Main(string[] args)
         {
-            Grafo G;
-
-            MontaGrafo(out G);
+            Grafo G = CriarGrafoArquivo();
 
             List<int> resultado = G.ObterCoberturaMinimal();
 
             Console.WriteLine("Subconjunto minimal:");
 
             foreach (var item in resultado)
-            {                
+            {
                 Console.Write(" - {0}", item);
             }
 
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Formato de arquivo:
+        /// (quantidade vertices)
+        /// (vertice1),(vertice2) [aresta 1]
+        /// ... [aresta n]
+        /// </summary>
+        /// <returns></returns>
+        public static Grafo CriarGrafoArquivo()
+        {
+            try
+            {
+                string[] linhas = System.IO.File.ReadAllLines(@"grafo.txt");
+
+                int quantidadeVertices = Convert.ToInt32(linhas[0]);
+                int quantidadeArestas = linhas.Length - 1; //Removendo a linha que indica a quantidade de vértices
+                Grafo G = new Grafo(quantidadeVertices);
+
+                for (int i = 1; i <= quantidadeArestas; i++)
+                {
+                    string[] linha = linhas[i].Split(',');
+
+                    G.AdicionarAresta(Convert.ToInt32(linha[0]), Convert.ToInt32(linha[1]));
+                }
+
+                return G;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Não foi possível montar o Grafo a partir do arquivo grafo.txt");
+                throw;
+            }
+
         }
 
         public static void MontaGrafo(out Grafo G)
@@ -142,7 +171,7 @@ namespace OTM_Delta
                             verticesVisitados[u] = true;
 
                             //Adicionando o destino ao subconjunto de cobertura minimal
-                            verticesSelecionados.Add(v);                         
+                            verticesSelecionados.Add(v);
                         }
                     }
                 }
