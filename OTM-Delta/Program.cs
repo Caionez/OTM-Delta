@@ -13,11 +13,17 @@ namespace OTM_Delta
 
             Console.WriteLine("Subconjunto minimal:");
 
+            string subconjunto = "{";
+
             foreach (var item in resultado)
             {
-                Console.Write(" - {0}", item);
+                subconjunto += item + ", ";
             }
 
+            subconjunto = subconjunto.Remove(subconjunto.LastIndexOf(','));
+            subconjunto += "}";
+
+            Console.WriteLine(subconjunto);
             Console.ReadKey();
         }
 
